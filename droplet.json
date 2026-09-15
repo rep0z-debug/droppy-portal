@@ -1,0 +1,43 @@
+{
+  "id": "portal",
+  "name": "Portal",
+  "version": "1.0.0",
+  "summary": "Your localhost servers, in your notch",
+  "description": "Portal watches the ports your own processes are listening on and puts your local dev servers on Droppy's shelf and notch.",
+  "category": "Productivity",
+  "kit": {
+    "abi": 1,
+    "minAPI": "1.8.0"
+  },
+  "minAppVersion": "15.3.0",
+  "capabilities": [
+    "hud",
+    "clipboard-write",
+    "menu-bar"
+  ],
+  "surfaces": [
+    "shelf-widget",
+    "hud",
+    "live-activity",
+    "menu-bar-extra",
+    "settings-pane"
+  ],
+  "icon": "Portal.icon",
+  "creator": {
+    "name": "rep0z",
+    "kind": "community",
+    "url": "https://github.com/rep0z-debug",
+    "avatar": "Creator.png"
+  },
+  "source": {
+    "repository": "https://github.com/rep0z-debug/droppy-portal",
+    "license": "MIT"
+  },
+  "keywords": [
+    "localhost",
+    "ports",
+    "dev server",
+    "qr",
+    "vite"
+  ]
+}
