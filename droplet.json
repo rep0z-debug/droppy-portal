@@ -32,7 +32,7 @@
     "gitlab": "rep0z"
   },
   "source": {
-    "repository": "https://github.com/rep0z-debug/droppy-portal",
+    "repository": "https://gitlab.com/droppyformac1/droplets/-/tree/main/droplets/portal",
     "license": "MIT"
   },
   "keywords": [
