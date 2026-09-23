@@ -13,7 +13,8 @@
   "capabilities": [
     "hud",
     "clipboard-write",
-    "menu-bar"
+    "menu-bar",
+    "sound-playback"
   ],
   "surfaces": [
     "shelf-widget",
