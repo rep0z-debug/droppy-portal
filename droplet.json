@@ -27,7 +27,8 @@
     "name": "rep0z",
     "kind": "community",
     "url": "https://github.com/rep0z-debug",
-    "avatar": "Creator.png"
+    "avatar": "Creator.png",
+    "gitlab": "rep0z"
   },
   "source": {
     "repository": "https://github.com/rep0z-debug/droppy-portal",
