@@ -31,11 +31,11 @@ extension LocalServer {
     static func gathered(from sockets: [ListeningSocket]) -> [LocalServer] {
         var byIdentity: [Identity: LocalServer] = [:]
         for socket in sockets {
+            guard !ServerRuntime.isSystemBinary(at: socket.executablePath) else { continue }
             let identity = Identity(processID: socket.processID, port: socket.port)
             if let seen = byIdentity[identity], seen.reach.breadth >= socket.reach.breadth { continue }
             let runtime = ServerRuntime.label(forProcessNamed: socket.processName)
             let looksLikeDevelopment = ServerRuntime.isDevelopmentPort(socket.port)
-                && !ServerRuntime.isSystemBinary(at: socket.executablePath)
             byIdentity[identity] = LocalServer(
                 id: identity,
                 reach: socket.reach,

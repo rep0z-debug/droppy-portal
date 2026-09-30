@@ -3,6 +3,7 @@ import SwiftUI
 
 struct ServerList: View {
     @ObservedObject var droplet: PortalDroplet
+    let availableHeight: CGFloat
 
     var body: some View {
         VStack(alignment: .leading, spacing: DroppySpacing.sm) {
@@ -22,7 +23,7 @@ struct ServerList: View {
 
     private var header: some View {
         WidgetHeader(title: "Portal") {
-            if droplet.servers.count > WidgetMetrics.visibleRowCeiling {
+            if moreCount > 0 {
                 Text(verbatim: "\(droplet.servers.count)")
                     .font(.system(size: 11, weight: .medium))
                     .monospacedDigit()
@@ -39,12 +40,42 @@ struct ServerList: View {
         }
     }
 
+    private var fittingRowCount: Int {
+        let chrome = WidgetMetrics.chromeHeight + WidgetMetrics.listBottomInset
+        let footnote = droplet.hiddenPortNote != nil ? DroppySpacing.sm + WidgetMetrics.footnoteHeight : 0
+        let remaining = availableHeight - chrome - footnote
+        guard remaining > 0 else { return 0 }
+        let perRow = WidgetMetrics.rowHeight + DroppySpacing.xsm
+        return max(0, Int((remaining + DroppySpacing.xsm) / perRow))
+    }
+
+    private var shownServers: [LocalServer] {
+        let total = droplet.servers.count
+        let capacity = fittingRowCount
+        guard total > capacity else { return droplet.servers }
+        return Array(droplet.servers.prefix(max(0, capacity - 1)))
+    }
+
+    private var moreCount: Int {
+        droplet.servers.count - shownServers.count
+    }
+
     @ViewBuilder
     private var list: some View {
+        let shown = shownServers
+        let overflow = moreCount
+
         let rows = ScrollView(.vertical) {
             VStack(alignment: .leading, spacing: DroppySpacing.xsm) {
-                ForEach(droplet.servers) { server in
+                ForEach(shown) { server in
                     ServerRow(droplet: droplet, server: server)
+                }
+
+                if overflow > 0 {
+                    Text(overflow == 1 ? "and 1 more" : "and \(overflow) more")
+                        .font(.system(size: 11))
+                        .foregroundStyle(AdaptiveColors.notchSurfaceTertiaryText)
+                        .frame(height: WidgetMetrics.rowHeight)
                 }
 
                 if let footnote = droplet.hiddenPortNote {
@@ -59,7 +90,7 @@ struct ServerList: View {
             .padding(.bottom, WidgetMetrics.listBottomInset)
         }
 
-        if droplet.servers.count > WidgetMetrics.visibleRowCeiling {
+        if overflow > 0 || shown.count > WidgetMetrics.visibleRowCeiling {
             rows.scrollEdgeFade()
         } else {
             rows

@@ -18,6 +18,8 @@ struct MenuBarList: View {
         .padding(.horizontal, DroppySpacing.md)
         .padding(.vertical, DroppySpacing.sm)
         .frame(width: Self.width, height: Self.height, alignment: .top)
+        .onAppear { droplet.surfaceDidAppear() }
+        .onDisappear { droplet.surfaceDidDisappear() }
     }
 
     private var header: some View {

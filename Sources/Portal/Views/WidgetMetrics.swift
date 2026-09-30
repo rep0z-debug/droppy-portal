@@ -25,13 +25,10 @@ enum WidgetMetrics {
     }
 
     static func cardHeight(rows: Int, hasFootnote: Bool) -> CGFloat {
-        let shown = min(rows, visibleRowCeiling)
-        let list = shown > 0
-            ? CGFloat(shown) * rowHeight + CGFloat(shown - 1) * DroppySpacing.xsm
+        let list = rows > 0
+            ? CGFloat(rows) * rowHeight + CGFloat(rows - 1) * DroppySpacing.xsm
             : 0
-        let footnote = hasFootnote && rows <= visibleRowCeiling
-            ? DroppySpacing.sm + footnoteHeight
-            : 0
+        let footnote = hasFootnote ? DroppySpacing.sm + footnoteHeight : 0
         return max(chromeHeight + list + footnote + listBottomInset, shortestCard)
     }
 }

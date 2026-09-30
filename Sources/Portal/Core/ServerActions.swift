@@ -39,6 +39,16 @@ extension PortalDroplet {
         }
 
         let force = willForceQuit(server)
+        if force {
+            let confirmed = DropletConfirmationDialog.present(
+                title: String(localized: "Force quit \(server.runtime)?"),
+                message: String(localized: "This immediately ends the process listening on port \(server.port). Unsaved work in it may be lost."),
+                confirmTitle: String(localized: "Force Quit"),
+                symbol: "xmark.octagon"
+            )
+            guard confirmed else { return }
+        }
+
         switch ProcessSignals.stop(server.processID, startedAt: server.startedAt, force: force) {
         case .delivered:
             if !force { rememberQuitRequest(for: server.processID) }

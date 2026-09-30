@@ -12,11 +12,12 @@ struct PortalWidget: View {
             } else if let server = droplet.handoffServer {
                 PhoneHandoff(droplet: droplet, server: server, context: context)
             } else {
-                ServerList(droplet: droplet)
+                ServerList(droplet: droplet, availableHeight: context.availableSize.height)
             }
         }
-        .padding(WidgetMetrics.cornerSafeInset)
         .padding(context.contentInsets)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .onAppear { droplet.surfaceDidAppear() }
+        .onDisappear { droplet.surfaceDidDisappear() }
     }
 }

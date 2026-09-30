@@ -1,4 +1,3 @@
-import Combine
 import DroppyKit
 import SwiftUI
 
@@ -20,14 +19,4 @@ extension PortalDroplet: ShelfWidgetProviding {
     }
 
     static let widgetIdentifier: ShelfWidgetID = "servers"
-}
-
-extension PortalDroplet: ShelfWidgetDynamicLayoutProviding {
-    public func currentLayoutTraits(for id: ShelfWidgetID) -> ShelfWidgetLayoutTraits? {
-        id == Self.widgetIdentifier ? widgetTraits : nil
-    }
-
-    public var shelfWidgetLayoutInvalidationPublisher: AnyPublisher<ShelfWidgetID, Never> {
-        layoutInvalidation.eraseToAnyPublisher()
-    }
 }

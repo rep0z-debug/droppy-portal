@@ -86,5 +86,5 @@ enum ServerRuntime {
         8080...8090
     ]
 
-    private static let systemLocations = ["/System/", "/usr/libexec/", "/Library/Apple/"]
+    private static let systemLocations = ["/System/", "/usr/libexec/", "/usr/sbin/", "/usr/bin/", "/Library/Apple/"]
 }

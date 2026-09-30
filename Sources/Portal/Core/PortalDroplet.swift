@@ -12,23 +12,25 @@ public final class PortalDroplet: NSObject, ObservableObject, Droplet {
     @Published private(set) var hiddenPortCount = 0
     @Published private(set) var localNetworkAddress: String?
     @Published private(set) var askedToQuit: Set<pid_t> = []
-    @Published private(set) var announcement: NotchAnnouncement?
+    @Published private(set) var announcement: NotchAnnouncement? { didSet { refreshPollRate() } }
     @Published private(set) var recentlyCopied: LocalServer.Identity?
     @Published var handoffTarget: LocalServer.Identity? { didSet { resizeCard() } }
 
     let watcher = ServerWatcher()
     let activityState = CurrentValueSubject<LiveActivityState?, Never>(nil)
-    let layoutInvalidation = PassthroughSubject<ShelfWidgetID, Never>()
     private(set) var host: DropletHost?
     private var quitRequests: [pid_t: Date] = [:]
     private var notchHold: Task<Void, Never>?
     private var copyFlash: Task<Void, Never>?
     private var cardHeight = WidgetMetrics.shortestCard
+    private var visibleSurfaceCount = 0
+
+    private static let idlePollInterval: TimeInterval = 6
 
     public func activate(host: DropletHost) throws {
         self.host = host
         watcher.onChange = { [weak self] snapshot in self?.absorb(snapshot) }
-        watcher.start(every: pollInterval, showingEveryPort: showsEveryPort)
+        watcher.start(every: Self.idlePollInterval, showingEveryPort: showsEveryPort)
         host.log.info("Portal is watching this account's listening ports")
     }
 
@@ -41,6 +43,7 @@ public final class PortalDroplet: NSObject, ObservableObject, Droplet {
         copyFlash = nil
         activityState.send(nil)
         host?.hud.dismiss(id: Self.announcementHUDIdentifier)
+        host = nil
         servers = []
         hiddenPortCount = 0
         localNetworkAddress = nil
@@ -49,7 +52,8 @@ public final class PortalDroplet: NSObject, ObservableObject, Droplet {
         recentlyCopied = nil
         askedToQuit = []
         quitRequests.removeAll()
-        host = nil
+        cardHeight = WidgetMetrics.shortestCard
+        visibleSurfaceCount = 0
     }
 
     var newestServer: LocalServer? { servers.first }
@@ -70,6 +74,24 @@ public final class PortalDroplet: NSObject, ObservableObject, Droplet {
             preferredPairedWidth: 210,
             contentHeight: .fixed(cardHeight)
         )
+    }
+
+    var isAnySurfaceVisible: Bool {
+        visibleSurfaceCount > 0 || announcement != nil
+    }
+
+    func surfaceDidAppear() {
+        visibleSurfaceCount += 1
+        refreshPollRate()
+    }
+
+    func surfaceDidDisappear() {
+        visibleSurfaceCount = max(0, visibleSurfaceCount - 1)
+        refreshPollRate()
+    }
+
+    func refreshPollRate() {
+        watcher.setInterval(isAnySurfaceVisible ? pollInterval : Self.idlePollInterval)
     }
 
     func networkAddress(of server: LocalServer) -> String? {
@@ -150,10 +172,10 @@ public final class PortalDroplet: NSObject, ObservableObject, Droplet {
     private func resizeCard() {
         let list = WidgetMetrics.cardHeight(rows: servers.count, hasFootnote: hiddenPortNote != nil)
         let showsCode = handoffServer.flatMap { networkAddress(of: $0) } != nil
-        let height = showsCode ? max(list, WidgetMetrics.handoffCardHeight) : list
+        let height = showsCode ? WidgetMetrics.handoffCardHeight : list
         guard height != cardHeight else { return }
         cardHeight = height
-        layoutInvalidation.send(Self.widgetIdentifier)
+        host?.shelf.invalidateLayout(for: Self.widgetIdentifier)
     }
 
     private func forgetStaleQuitRequests() {

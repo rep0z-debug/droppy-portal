@@ -102,7 +102,7 @@ extension PortalDroplet {
                 let clamped = seconds.clamped(to: Self.pollIntervalRange)
                 self.objectWillChange.send()
                 self.host?.preferences.setValue(clamped, forKey: Stored.pollInterval)
-                self.watcher.setInterval(clamped)
+                self.refreshPollRate()
             }
         )
     }

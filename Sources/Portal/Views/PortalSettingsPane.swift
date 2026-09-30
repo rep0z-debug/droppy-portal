@@ -5,14 +5,13 @@ struct PortalSettingsPane: View {
     @ObservedObject var droplet: PortalDroplet
 
     var body: some View {
-        VStack(alignment: .leading, spacing: DroppySpacing.lg) {
+        DropletSettingsPane {
             DropletSettingsCard {
                 DropletToggleRow(
                     title: "Show all ports",
                     subtitle: "Lists every port your account is listening on. Off, it keeps to the dev servers Portal recognises.",
                     isOn: droplet.showsEveryPortBinding
                 )
-                DropletSettingsDivider()
                 DropletSliderRow(
                     title: "Check for changes",
                     value: seconds(droplet.pollInterval),
@@ -28,13 +27,11 @@ struct PortalSettingsPane: View {
                     subtitle: "Shows the newly opened port in the notch.",
                     isOn: droplet.announcesArrivalsBinding
                 )
-                DropletSettingsDivider()
                 DropletToggleRow(
                     title: "Announce servers that close",
                     subtitle: "Shows when a port closes, in the notch.",
                     isOn: droplet.announcesDeparturesBinding
                 )
-                DropletSettingsDivider()
                 DropletSliderRow(
                     title: "Keep it in the notch",
                     value: hold,
@@ -57,7 +54,6 @@ struct PortalSettingsPane: View {
                 DropletControlRow(title: "Listening now") {
                     DropletValuePill(text: "\(droplet.servers.count)")
                 }
-                DropletSettingsDivider()
                 DropletControlRow(title: "Wi-Fi address") {
                     DropletValuePill(text: droplet.localNetworkAddress ?? "Not on a network")
                 }
