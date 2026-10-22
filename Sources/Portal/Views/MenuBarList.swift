@@ -102,7 +102,7 @@ struct MenuBarList: View {
                 .accessibilityLabel("Copy \(server.localAddress)")
             }
 
-            if !server.isThisApp {
+            if !server.isThisApp && server.isDevelopmentServer {
                 Button {
                     droplet.stop(server)
                 } label: {
@@ -116,7 +116,7 @@ struct MenuBarList: View {
                         foregroundColorOverride: nil
                     )
                 )
-                .help(droplet.willForceQuit(server) ? "Press again to force quit" : "Quit this process")
+                .help("Quit this process")
                 .accessibilityLabel("Quit \(server.runtime) on port \(server.port)")
             }
         }

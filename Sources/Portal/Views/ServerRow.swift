@@ -65,7 +65,7 @@ struct ServerRow: View {
             .buttonStyle(DroppyCircleButtonStyle(size: 20))
             .accessibilityLabel("Open port \(server.port) on your phone")
 
-            if !server.isThisApp {
+            if !server.isThisApp && server.isDevelopmentServer {
                 Button {
                     droplet.stop(server)
                 } label: {

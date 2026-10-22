@@ -17,20 +17,14 @@ final class ServerWatcher {
     private var sweep: Task<Void, Never>?
     private var announced: [LocalServer.Identity: LocalServer] = [:]
     private var reportsArrivals = false
-    private var interval: TimeInterval = 1
+    private var interval: TimeInterval?
     private var showsEveryPort = false
 
-    func start(every seconds: TimeInterval, showingEveryPort everything: Bool) {
+    func start(every seconds: TimeInterval?, showingEveryPort everything: Bool) {
         stop()
         interval = seconds
         showsEveryPort = everything
-        loop = Task { [weak self] in
-            while !Task.isCancelled {
-                guard let self else { return }
-                self.look()
-                try? await Task.sleep(for: .seconds(self.interval))
-            }
-        }
+        run()
     }
 
     func stop() {
@@ -42,9 +36,24 @@ final class ServerWatcher {
         reportsArrivals = false
     }
 
-    func setInterval(_ seconds: TimeInterval) {
+    func setInterval(_ seconds: TimeInterval?) {
         guard seconds != interval else { return }
+        if interval == nil { reportsArrivals = false }
         interval = seconds
+        run()
+    }
+
+    private func run() {
+        loop?.cancel()
+        loop = nil
+        guard interval != nil else { return }
+        loop = Task { [weak self] in
+            while !Task.isCancelled {
+                guard let self, let seconds = self.interval else { return }
+                self.look()
+                try? await Task.sleep(for: .seconds(seconds))
+            }
+        }
     }
 
     func showEveryPort(_ everything: Bool) {

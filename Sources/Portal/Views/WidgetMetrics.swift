@@ -7,7 +7,7 @@ enum WidgetMetrics {
     static let compactRowHeight: CGFloat = 17
     static let footnoteHeight: CGFloat = 14
     static let listBottomInset: CGFloat = 2
-    static let cornerSafeInset = DroppySpacing.xs
+    static let declaredInset: CGFloat = 8
     static let visibleRowCeiling = 10
     static let shortestCard: CGFloat = 110
 
@@ -17,7 +17,11 @@ enum WidgetMetrics {
     static var codeTileSide: CGFloat { codeSide + codeTileInset * 2 }
 
     static var chromeHeight: CGFloat {
-        cornerSafeInset * 2 + headerHeight + DroppySpacing.sm
+        declaredInset * 2 + headerHeight + DroppySpacing.sm
+    }
+
+    static func chrome(insets: EdgeInsets) -> CGFloat {
+        insets.top + insets.bottom + headerHeight + DroppySpacing.sm
     }
 
     static var handoffCardHeight: CGFloat {
@@ -25,6 +29,7 @@ enum WidgetMetrics {
     }
 
     static func cardHeight(rows: Int, hasFootnote: Bool) -> CGFloat {
+        let rows = min(rows, visibleRowCeiling)
         let list = rows > 0
             ? CGFloat(rows) * rowHeight + CGFloat(rows - 1) * DroppySpacing.xsm
             : 0

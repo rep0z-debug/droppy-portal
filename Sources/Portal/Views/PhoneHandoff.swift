@@ -11,7 +11,7 @@ struct PhoneHandoff: View {
 
     private var codeSide: CGFloat {
         let room = context.availableSize.height
-            - WidgetMetrics.chromeHeight
+            - WidgetMetrics.chrome(insets: context.contentInsets)
             - DroppySpacing.sm
             - WidgetMetrics.codeTileInset * 2
         return max(56, min(WidgetMetrics.codeSide, room))

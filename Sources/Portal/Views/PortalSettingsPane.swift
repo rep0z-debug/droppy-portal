@@ -9,7 +9,7 @@ struct PortalSettingsPane: View {
             DropletSettingsCard {
                 DropletToggleRow(
                     title: "Show all ports",
-                    subtitle: "Lists every port your account is listening on. Off, it keeps to the dev servers Portal recognises.",
+                    subtitle: "Lists every port you're listening on, not just dev servers.",
                     isOn: droplet.showsEveryPortBinding
                 )
                 DropletSliderRow(
@@ -45,7 +45,7 @@ struct PortalSettingsPane: View {
             DropletSettingsCard {
                 DropletToggleRow(
                     title: "Show a menu bar item",
-                    subtitle: "Shows Portal in your Mac's menu bar.",
+                    subtitle: "Shows Portal in the menu bar. Relaunch Droppy to apply a change.",
                     isOn: droplet.showsMenuBarItemBinding
                 )
             }

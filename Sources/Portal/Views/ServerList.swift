@@ -4,6 +4,7 @@ import SwiftUI
 struct ServerList: View {
     @ObservedObject var droplet: PortalDroplet
     let availableHeight: CGFloat
+    let contentInsets: EdgeInsets
 
     var body: some View {
         VStack(alignment: .leading, spacing: DroppySpacing.sm) {
@@ -41,12 +42,12 @@ struct ServerList: View {
     }
 
     private var fittingRowCount: Int {
-        let chrome = WidgetMetrics.chromeHeight + WidgetMetrics.listBottomInset
+        let chrome = WidgetMetrics.chrome(insets: contentInsets) + WidgetMetrics.listBottomInset
         let footnote = droplet.hiddenPortNote != nil ? DroppySpacing.sm + WidgetMetrics.footnoteHeight : 0
         let remaining = availableHeight - chrome - footnote
         guard remaining > 0 else { return 0 }
         let perRow = WidgetMetrics.rowHeight + DroppySpacing.xsm
-        return max(0, Int((remaining + DroppySpacing.xsm) / perRow))
+        return min(max(0, Int((remaining + DroppySpacing.xsm) / perRow)), WidgetMetrics.visibleRowCeiling)
     }
 
     private var shownServers: [LocalServer] {
