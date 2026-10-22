@@ -38,12 +38,18 @@ extension PortalDroplet {
             return
         }
 
+        guard server.isDevelopmentServer else {
+            host?.log.notice("refused to signal a process that is not a recognised dev server on port \(server.port)")
+            host?.feedback.play(.failure)
+            return
+        }
+
         let force = willForceQuit(server)
         if force {
             let confirmed = DropletConfirmationDialog.present(
                 title: String(localized: "Force quit \(server.runtime)?"),
                 message: String(localized: "This immediately ends the process listening on port \(server.port). Unsaved work in it may be lost."),
-                confirmTitle: String(localized: "Force Quit"),
+                confirmTitle: String(localized: "Force quit"),
                 symbol: "xmark.octagon"
             )
             guard confirmed else { return }

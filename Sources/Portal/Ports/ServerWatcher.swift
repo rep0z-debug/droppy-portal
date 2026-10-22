@@ -62,6 +62,10 @@ final class ServerWatcher {
         look()
     }
 
+    func scanNow() {
+        look()
+    }
+
     private func look() {
         guard sweep == nil else { return }
         sweep = Task { [weak self] in

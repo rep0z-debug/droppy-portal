@@ -16,7 +16,7 @@ extension PortalDroplet {
     static let notchHoldRange: ClosedRange<Double> = 0...30
 
     var showsEveryPort: Bool {
-        host?.preferences.value(forKey: Stored.showsEveryPort, default: true) ?? true
+        host?.preferences.value(forKey: Stored.showsEveryPort, default: false) ?? false
     }
 
     var announcesArrivals: Bool {
@@ -33,6 +33,7 @@ extension PortalDroplet {
             set: { announces in
                 self.objectWillChange.send()
                 self.host?.preferences.setValue(announces, forKey: Stored.announcesDepartures)
+                self.refreshPollRate()
                 if !announces, self.announcement?.kind == .departed { self.releaseNotch() }
             }
         )
@@ -79,6 +80,7 @@ extension PortalDroplet {
             set: { announces in
                 self.objectWillChange.send()
                 self.host?.preferences.setValue(announces, forKey: Stored.announcesArrivals)
+                self.refreshPollRate()
             }
         )
     }

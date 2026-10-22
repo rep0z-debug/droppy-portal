@@ -30,7 +30,7 @@ public final class PortalDroplet: NSObject, ObservableObject, Droplet {
     public func activate(host: DropletHost) throws {
         self.host = host
         watcher.onChange = { [weak self] snapshot in self?.absorb(snapshot) }
-        watcher.start(every: Self.idlePollInterval, showingEveryPort: showsEveryPort)
+        watcher.start(every: currentPollRate, showingEveryPort: showsEveryPort)
         host.log.info("Portal is watching this account's listening ports")
     }
 
@@ -83,6 +83,7 @@ public final class PortalDroplet: NSObject, ObservableObject, Droplet {
     func surfaceDidAppear() {
         visibleSurfaceCount += 1
         refreshPollRate()
+        watcher.scanNow()
     }
 
     func surfaceDidDisappear() {
@@ -90,8 +91,15 @@ public final class PortalDroplet: NSObject, ObservableObject, Droplet {
         refreshPollRate()
     }
 
+    var currentPollRate: TimeInterval? {
+        if isAnySurfaceVisible { return pollInterval }
+        if announcesArrivals || announcesDepartures { return Self.idlePollInterval }
+        return nil
+    }
+
     func refreshPollRate() {
-        watcher.setInterval(isAnySurfaceVisible ? pollInterval : Self.idlePollInterval)
+        guard host != nil else { return }
+        watcher.setInterval(currentPollRate)
     }
 
     func networkAddress(of server: LocalServer) -> String? {
